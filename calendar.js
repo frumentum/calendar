@@ -16,28 +16,16 @@ function addDate (startTime, endTime) {
   })
 }
 
-function testOverlappingDate (date1, date2, includeDescription = false) {
-  if (date1.endTime > date2.startTime) {
-    if (includeDescription) {
-      return `date ${date1.id} and date ${date2.id} are overlapping!`
-    } else {
-      return true
-    }
-  } else {
-    if (includeDescription) {
-      return `date ${date1.id} and date ${date2.id} are NOT overlapping!`
-    } else {
-      return false
-    }
+function testOverlappingDate (date1, date2) {
+  let infoAboutOverlapping = {
+    id1: date1.id,
+    id2: date2.id
   }
+  infoAboutOverlapping.return = date1.endTime > date2.startTime
+  let tmpString = `date ${date1.id} and date ${date2.id} are overlapping:`
+  infoAboutOverlapping.string = `${tmpString} ${infoAboutOverlapping.return}`
+  return infoAboutOverlapping
 }
-
-// function getDate (time) {
-//   let today = new Date()
-//   let _t = time.split(':')
-//   today.setHours(_t[0], _t[1], 0, 0)
-//   return today
-// }
 
 let allDates = []
 
@@ -50,9 +38,11 @@ addDate('15:30', '16:00')
 
 // iterate through every combination of dates and look which ones overlap
 // start at the first date, i = 0, ...
+let resultArray = []
 for (let i = 0; i + 1 < allDates.length; i++) {
   // ... and compare with all dates that follow afterwards, j = i + 1
   for (let j = i + 1; j < allDates.length; j++) {
-    console.log(testOverlappingDate(allDates[i], allDates[j], true))
+    resultArray.push(testOverlappingDate(allDates[i], allDates[j]))
   }
 }
+console.log(resultArray)
