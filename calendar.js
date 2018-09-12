@@ -70,19 +70,36 @@ function filterOverlappingDates (dateArray) {
     }
   }
   // filter those date combinations as an array which are overlapping
-  return resultArray.filter(object => object.return)
+  const overlappedDates = resultArray.filter(object => object.return)
+  if (overlappedDates.length) {
+    return overlappedDates
+  } else {
+    return 'There are no overlapping dates!'
+  }
 }
 const overlappedDates = filterOverlappingDates(allDates)
-// console.log(overlappedDates)
-let id2 = []
-overlappedDates.forEach(obj => id2.push(obj.id2))
-console.log(id2)
-let id1 = []
-overlappedDates.forEach(obj => id1.push(obj.id1))
-console.log(id1)
+if (overlappedDates.length) {
+  let id2 = []
+  overlappedDates.forEach(obj => id2.push(obj.id2))
+  // how often appears an element in array id2?
+  id2 = id2.reduce(function (accumulator, currentValue) {
+    if (typeof accumulator[currentValue] === 'undefined') {
+      accumulator[currentValue] = 1
+    } else {
+      accumulator[currentValue] += 1
+    }
+    return accumulator
+  }, {})
+  // filter that id which overlaps the most
+  console.log(Object.values(id2))
+  const maxNumber = Math.max(...Object.values(id2))
+  const options = Object.entries(id2).filter(index => index[1] === maxNumber)
+  let importantIDs = []
+  options.forEach(i => importantIDs.push(parseInt(i[0]))) // extract IDs
+  console.log(importantIDs)
+}
 
-// identify the span of all dates of the requested day
-// console.log(allDates)
+// identify the timespan of all dates on one day
 function extractMaximumTimespan (allDatesArray) {
   let tmpTime = [] // dummy variable
   // extract the earliest date
