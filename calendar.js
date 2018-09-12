@@ -1,4 +1,13 @@
-function addDate (startTime, endTime) {
+// create an array containing the dates as objects
+let allDates = []
+addDate('09:00', '14:30', allDates)
+addDate('09:00', '15:30', allDates)
+addDate('09:30', '11:30', allDates)
+addDate('11:30', '12:00', allDates)
+addDate('14:30', '15:00', allDates)
+addDate('15:30', '16:00', allDates)
+
+function addDate (startTime, endTime, allDatesArray) {
   // convert startTime string to Date format
   const _s = startTime.split(':')
   let start = new Date()
@@ -9,26 +18,32 @@ function addDate (startTime, endTime) {
   end.setUTCHours(_e[0], _e[1])
 
   // add start and end time to the allDates array
-  allDates.push({
+  allDatesArray.push({
     startTime: start,
     endTime: end,
-    id: allDates.length + 1,
+    id: allDatesArray.length + 1,
     timeSpan: end - start
   })
   // sort the array by the timespan: the greater timespans come first!
-  sortAllDates(allDates)
+  addInfoAboutSorting(allDatesArray)
 }
 
-function sortAllDates (allDatesArray) {
+function addInfoAboutSorting (allDatesArray) {
   if (allDatesArray.length >= 2) {
-    // sort dates by timespan
-    allDatesArray.sort((a, b) => b.timeSpan - a.timeSpan)
-    // rewrite the date IDs; To do this create a sequence of new IDs
-    const newIDs = Array.from(
+    // Create a dummy variable which represents the new order
+    const orderDummy = Array.from(
       new Array(allDatesArray.length), (val, index) => index + 1
     )
+    // now sort dates by earliest date
+    allDatesArray.sort((a, b) => a.startTime - b.startTime)
     for (let i = 0; i < allDatesArray.length; i++) {
-      allDatesArray[i].id = newIDs[i] // replace id by the new one
+      allDatesArray[i].sortByStartTime = orderDummy[i] // add start time order
+    }
+    // sort dates by timespan
+    allDatesArray.sort((a, b) => b.timeSpan - a.timeSpan)
+    // add information about sorting
+    for (let i = 0; i < allDatesArray.length; i++) {
+      allDatesArray[i].sortByTimespan = orderDummy[i] // add timespan order
     }
   }
 }
@@ -44,15 +59,6 @@ function testOverlappingDate (date1, date2) {
   return infoAboutOverlapping
 }
 
-// create an array containing the dates as objects
-let allDates = []
-addDate('09:00', '14:30')
-addDate('09:00', '15:30')
-addDate('09:30', '11:30')
-addDate('11:30', '12:00')
-addDate('14:30', '15:00')
-addDate('15:30', '16:00')
-
 function filterOverlappingDates (dateArray) {
   // iterate through every combination of dates and look which ones overlap
   // start at the first date, i = 0, ...
@@ -67,7 +73,13 @@ function filterOverlappingDates (dateArray) {
   return resultArray.filter(object => object.return)
 }
 const overlappedDates = filterOverlappingDates(allDates)
-console.log(overlappedDates)
+// console.log(overlappedDates)
+let id2 = []
+overlappedDates.forEach(obj => id2.push(obj.id2))
+console.log(id2)
+let id1 = []
+overlappedDates.forEach(obj => id1.push(obj.id1))
+console.log(id1)
 
 // identify the span of all dates of the requested day
 // console.log(allDates)
