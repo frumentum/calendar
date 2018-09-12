@@ -52,7 +52,6 @@ addDate('09:30', '11:30')
 addDate('11:30', '12:00')
 addDate('14:30', '15:00')
 addDate('15:30', '16:00')
-console.log(allDates)
 
 function filterOverlappingDates (dateArray) {
   // iterate through every combination of dates and look which ones overlap
@@ -72,16 +71,20 @@ console.log(overlappedDates)
 
 // identify the span of all dates of the requested day
 // console.log(allDates)
-let tmpTime = []
-allDates.forEach(object => tmpTime.push(object.startTime))
-const earliestDate = tmpTime.reduce(function (pre, cur) {
-  return Date.parse(pre) > Date.parse(cur) ? cur : pre
-})
-// the same for the latest date
-tmpTime = [] // overwrite it again
-allDates.forEach(object => tmpTime.push(object.endTime))
-const latestDate = tmpTime.reduce(function (pre, cur) {
-  return Date.parse(pre) < Date.parse(cur) ? cur : pre
-})
-const maximumTimeSpan = latestDate - earliestDate
-console.log(maximumTimeSpan)
+function extractMaximumTimespan (allDatesArray) {
+  let tmpTime = [] // dummy variable
+  // extract the earliest date
+  allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
+  const earliestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) > Date.parse(cur) ? cur : pre
+  })
+  // the same for the latest date
+  tmpTime = [] // overwrite it again
+  allDates.forEach(obj => tmpTime.push(obj.endTime))
+  const latestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) < Date.parse(cur) ? cur : pre
+  })
+  // result is the maximum timespan
+  return latestDate - earliestDate
+}
+console.log(extractMaximumTimespan(allDates))
