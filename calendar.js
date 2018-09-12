@@ -27,8 +27,8 @@ function testOverlappingDate (date1, date2) {
   return infoAboutOverlapping
 }
 
+// create an array containing the dates as objects
 let allDates = []
-
 addDate('09:00', '15:30')
 addDate('09:00', '14:30')
 addDate('09:30', '11:30')
@@ -36,15 +36,33 @@ addDate('11:30', '12:00')
 addDate('14:30', '15:00')
 addDate('15:30', '16:00')
 
-// iterate through every combination of dates and look which ones overlap
-// start at the first date, i = 0, ...
-let resultArray = []
-for (let i = 0; i + 1 < allDates.length; i++) {
-  // ... and compare with all dates that follow afterwards, j = i + 1
-  for (let j = i + 1; j < allDates.length; j++) {
-    resultArray.push(testOverlappingDate(allDates[i], allDates[j]))
+function filterOverlappingDates (dateArray) {
+  // iterate through every combination of dates and look which ones overlap
+  // start at the first date, i = 0, ...
+  let resultArray = []
+  for (let i = 0; i + 1 < dateArray.length; i++) {
+    // ... and compare with all dates that follow afterwards, j = i + 1
+    for (let j = i + 1; j < dateArray.length; j++) {
+      resultArray.push(testOverlappingDate(dateArray[i], dateArray[j]))
+    }
   }
+  // filter the date combinations which are overlapping
+  return resultArray.filter(object => object.return)
 }
-// filter the date combinations which are overlapping
-let resultIsTrue = resultArray.filter(object => object.return)
-console.log(resultIsTrue)
+console.log(filterOverlappingDates(allDates))
+
+// identify the span of all dates of the requested day
+// console.log(allDates)
+let tmpTime = []
+allDates.forEach(object => tmpTime.push(object.startTime))
+const earliestDate = tmpTime.reduce(function (pre, cur) {
+  return Date.parse(pre) > Date.parse(cur) ? cur : pre
+})
+// the same for the latest date
+tmpTime = [] // overwrite it again
+allDates.forEach(object => tmpTime.push(object.endTime))
+const latestDate = tmpTime.reduce(function (pre, cur) {
+  return Date.parse(pre) < Date.parse(cur) ? cur : pre
+})
+const maximumTimeSpan = latestDate - earliestDate
+console.log(maximumTimeSpan)
