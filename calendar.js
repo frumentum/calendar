@@ -45,4 +45,6 @@ for (let i = 0; i + 1 < allDates.length; i++) {
     resultArray.push(testOverlappingDate(allDates[i], allDates[j]))
   }
 }
-console.log(resultArray)
+// filter the date combinations which are overlapping
+let resultIsTrue = resultArray.filter(object => object.return)
+console.log(resultIsTrue)
