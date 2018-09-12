@@ -48,5 +48,11 @@ addDate('11:30', '12:00')
 addDate('14:30', '15:00')
 addDate('15:30', '16:00')
 
-console.log(testOverlappingDate(allDates[0], allDates[1], true))
-console.log(testOverlappingDate(allDates[4], allDates[5], true))
+// iterate through every combination of dates and look which ones overlap
+// start at the first date, i = 0, ...
+for (let i = 0; i + 1 < allDates.length; i++) {
+  // ... and compare with all dates that follow afterwards, j = i + 1
+  for (let j = i + 1; j < allDates.length; j++) {
+    console.log(testOverlappingDate(allDates[i], allDates[j], true))
+  }
+}
