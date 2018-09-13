@@ -6,6 +6,9 @@ addDate('09:30', '11:30', allDates)
 addDate('11:30', '12:00', allDates)
 addDate('14:30', '15:00', allDates)
 addDate('15:30', '16:00', allDates)
+// sort the array by the timespan: the greater timespans come first!
+addInfoAboutSorting(allDates)
+console.log(allDates)
 
 function addDate (startTime, endTime, allDatesArray) {
   // convert startTime string to Date format
@@ -24,39 +27,50 @@ function addDate (startTime, endTime, allDatesArray) {
     id: allDatesArray.length + 1,
     timeSpan: end - start
   })
-  // sort the array by the timespan: the greater timespans come first!
-  addInfoAboutSorting(allDatesArray)
 }
 
 function addInfoAboutSorting (allDatesArray) {
   if (allDatesArray.length >= 2) {
+    // sort by earliest event
     // extract all start times to an array
     let startTime = []
     allDatesArray.forEach(obj => startTime.push(obj.startTime.getTime()))
     // get unique values of start time
     const uniqueStartTime = [...new Set(startTime)]
+    // now sort dates by earliest date
+    uniqueStartTime.sort((a, b) => a - b)
     // now assign each object a number representing the order according to its
     // unique start time
     allDatesArray.forEach(obj => {
       obj.sortByStartTime = uniqueStartTime.indexOf(obj.startTime.getTime())
     })
+    // sort by time span
     // the same for time span
     let timeSpan = []
     allDatesArray.forEach(obj => timeSpan.push(obj.timeSpan))
     // get unique values of time span
     const uniqueTimeSpan = [...new Set(timeSpan)]
+    // sort the time spans: longest first
+    uniqueTimeSpan.sort((a, b) => b - a)
     // now assign each object a number representing the order according to its
     // unique time span
-    allDatesArray.sort((a, b) => a.startTime - b.startTime)
-    for (let i = 0; i < allDatesArray.length; i++) {
-      allDatesArray[i].sortByStartTime = orderDummy[i] // add start time order
-    }
-    // sort dates by time span
-    allDatesArray.sort((a, b) => b.timeSpan - a.timeSpan)
-    // add information about sorting
-    for (let i = 0; i < allDatesArray.length; i++) {
-      allDatesArray[i].sortByTimespan = orderDummy[i] // add timespan order
-    }
+    allDatesArray.forEach(obj => {
+      obj.sortByTimeSpan = uniqueTimeSpan.indexOf(obj.timeSpan)
+    })
+
+    // add the sorting numbers to get the 'real' order we can use later!
+    // to reach this use the same procedure as above
+    allDatesArray.forEach(obj => {
+      obj.sortedOrder = obj.sortByTimeSpan + obj.sortByStartTime
+    })
+    let sortedOrder = []
+    allDatesArray.forEach(obj => sortedOrder.push(obj.sortedOrder))
+    const uniqueSortedOrder = [...new Set(sortedOrder)]
+    uniqueSortedOrder.sort((a, b) => a - b)
+    allDatesArray.forEach(obj => {
+      // overwrite the sorted order by their ordered index
+      obj.sortedOrder = uniqueSortedOrder.indexOf(obj.sortedOrder)
+    })
   }
 }
 
