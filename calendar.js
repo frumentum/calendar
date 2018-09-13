@@ -30,16 +30,28 @@ function addDate (startTime, endTime, allDatesArray) {
 
 function addInfoAboutSorting (allDatesArray) {
   if (allDatesArray.length >= 2) {
-    // Create a dummy variable which represents the new order
-    const orderDummy = Array.from(
-      new Array(allDatesArray.length), (val, index) => index + 1
-    )
-    // now sort dates by earliest date
+    // extract all start times to an array
+    let startTime = []
+    allDatesArray.forEach(obj => startTime.push(obj.startTime.getTime()))
+    // get unique values of start time
+    const uniqueStartTime = [...new Set(startTime)]
+    // now assign each object a number representing the order according to its
+    // unique start time
+    allDatesArray.forEach(obj => {
+      obj.sortByStartTime = uniqueStartTime.indexOf(obj.startTime.getTime())
+    })
+    // the same for time span
+    let timeSpan = []
+    allDatesArray.forEach(obj => timeSpan.push(obj.timeSpan))
+    // get unique values of time span
+    const uniqueTimeSpan = [...new Set(timeSpan)]
+    // now assign each object a number representing the order according to its
+    // unique time span
     allDatesArray.sort((a, b) => a.startTime - b.startTime)
     for (let i = 0; i < allDatesArray.length; i++) {
       allDatesArray[i].sortByStartTime = orderDummy[i] // add start time order
     }
-    // sort dates by timespan
+    // sort dates by time span
     allDatesArray.sort((a, b) => b.timeSpan - a.timeSpan)
     // add information about sorting
     for (let i = 0; i < allDatesArray.length; i++) {

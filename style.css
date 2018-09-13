@@ -38,20 +38,21 @@
 } */
 
 #firstDate {
-  width: 30%;
+  top: 10%;
   height: 75%;
+  left: 0;
+  width: 32%;
   background: linear-gradient(
     to bottom,
     lightblue,
     blue
     );
-  top: 10%;
 }
 #secondDate {
-  width: 30%;
-  left: 30%;
-  height: 60%;
   top: 10%;
+  height: 60%;
+  left: 32%;
+  width: 32%;
   background: linear-gradient(
     to bottom,
     lightgreen,
@@ -60,9 +61,9 @@
 }
 #thirdDate {
   top: 15%;
-  left: 60%;
-  width: 30%;
   height: 30%;
+  left: 64%;
+  width: 32%;
   background: linear-gradient(
     to bottom,
     Crimson,
@@ -71,9 +72,9 @@
 }
 #fourthDate {
   top: 45%;
-  left: 60%;
-  width: 30%;
   height: 10%;
+  left: 64%;
+  width: 32%;
   background: linear-gradient(
     to bottom,
     lightsalmon,
@@ -82,24 +83,20 @@
 }
 #fifthDate {
   top: 70%;
-  width: 60%;
-  left: 30%;
   height: 8%;
+  left: 32%;
+  width: 64%;
   background: linear-gradient(
     to bottom,
     orange, orangeRed
     );
 }
 #sixthDate{
-  width: 90%;
+  top: 85%;
   height: 10%;
-  bottom: 5%;
+  left: 0;
+  width: 96%;
   background: linear-gradient(
     to bottom, lightyellow, yellow
     );
 }
-
-
-/* The rectangle in which to repeat.
-   It can be fully wide in this case */
-background-size: 100% 20px;
