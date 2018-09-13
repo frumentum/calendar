@@ -11,11 +11,11 @@ function addDate (startTime, endTime, allDatesArray) {
   // convert startTime string to Date format
   const _s = startTime.split(':')
   let start = new Date()
-  start.setUTCHours(_s[0], _s[1])
+  start.setUTCHours(_s[0], _s[1], 0, 0)
   // convert endTime string to Date format
   const _e = endTime.split(':')
   let end = new Date()
-  end.setUTCHours(_e[0], _e[1])
+  end.setUTCHours(_e[0], _e[1], 0, 0)
 
   // add start and end time to the allDates array
   allDatesArray.push({
@@ -100,7 +100,7 @@ if (overlappedDates.length) {
 }
 
 // identify the timespan of all dates on one day
-function extractMaximumTimespan (allDatesArray) {
+function extractMaximumTimespan (allDatesArray, detailed = false) {
   let tmpTime = [] // dummy variable
   // extract the earliest date
   allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
@@ -114,6 +114,7 @@ function extractMaximumTimespan (allDatesArray) {
     return Date.parse(pre) < Date.parse(cur) ? cur : pre
   })
   // result is the maximum timespan
+  if (detailed) return [earliestDate, latestDate] // only for debugging
   return latestDate - earliestDate
 }
 const maximumTimespan = extractMaximumTimespan(allDates)
@@ -123,5 +124,41 @@ const maximumTimespan = extractMaximumTimespan(allDates)
 function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
   return maximumTimespan / datesPercentage
 }
-const displaySpan = calculateDisplaySpan(maximumTimespan)
-console.log(`display span in ms: ${displaySpan}`)
+// function to convert miliseconds to hours
+function parseMillisecondsIntoReadableTime (milliseconds) {
+  // Get hours from milliseconds
+  const hours = milliseconds / (1000 * 60 * 60)
+  const absoluteHours = Math.floor(hours)
+  const h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours
+
+  // Get remainder from hours and convert to minutes
+  const minutes = (hours - absoluteHours) * 60
+  const absoluteMinutes = Math.floor(minutes)
+  const m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes
+
+  // Get remainder from minutes and convert to seconds
+  const seconds = (minutes - absoluteMinutes) * 60
+  const absoluteSeconds = Math.floor(seconds)
+  const s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds
+
+  return h + ':' + m + ':' + s
+}
+// check output of time spans
+if (typeof maximumTimespan === 'number') {
+  const displaySpan = calculateDisplaySpan(maximumTimespan)
+  console.log(
+    `display span in time: ${parseMillisecondsIntoReadableTime(displaySpan)}`
+  )
+  console.log(
+    `maximum time span in time: ${parseMillisecondsIntoReadableTime(maximumTimespan)}`
+  )
+} else {
+  console.log(`date span, start and end time: ${maximumTimespan}`)
+}
+
+// function to sort by start time
+function sortByStartTime (allDatesArray) {
+  allDatesArray.sort((a, b) => a.startTime - b.startTime)
+}
+sortByStartTime(allDates)
+// console.log(allDates)
