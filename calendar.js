@@ -122,7 +122,8 @@ const maximumTimespan = extractMaximumTimespan(allDates)
 // 'datesPercentage' represents the part of the display which will be covered
 // by dates
 function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
-  return maximumTimespan / datesPercentage
+  // since maximumTimespan = datesPercentag * displaySpan
+  return maximumTimespan / datesPercentage // = displaySpan
 }
 // function to convert miliseconds to hours
 function parseMillisecondsIntoReadableTime (milliseconds) {
@@ -150,7 +151,8 @@ if (typeof maximumTimespan === 'number') {
     `display span in time: ${parseMillisecondsIntoReadableTime(displaySpan)}`
   )
   console.log(
-    `maximum time span in time: ${parseMillisecondsIntoReadableTime(maximumTimespan)}`
+    'maximum time span in time: ' +
+    parseMillisecondsIntoReadableTime(maximumTimespan)
   )
 } else {
   console.log(`date span, start and end time: ${maximumTimespan}`)
@@ -160,5 +162,9 @@ if (typeof maximumTimespan === 'number') {
 function sortByStartTime (allDatesArray) {
   allDatesArray.sort((a, b) => a.startTime - b.startTime)
 }
-sortByStartTime(allDates)
-// console.log(allDates)
+
+// Remember the rules
+// 1) Events must not overlap
+// 2) The “earlier” the start time, the further left the event is positioned
+// 3) The longer the duration of the event, the further left the event is positioned
+// 4) The space must be used fully
