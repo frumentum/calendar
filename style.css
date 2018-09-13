@@ -27,7 +27,7 @@
     position:absolute;
     opacity: 1;
 }
-#container:after {
+/* #container:after {
   content: "";
   background-color: rgba(51, 50, 250, .3);
   position: absolute;
@@ -35,7 +35,7 @@
   width: 100%;
   top:10%;
   z-index: -1;
-}
+} */
 
 #firstDate {
   width: 30%;

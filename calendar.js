@@ -116,4 +116,12 @@ function extractMaximumTimespan (allDatesArray) {
   // result is the maximum timespan
   return latestDate - earliestDate
 }
-console.log(extractMaximumTimespan(allDates))
+const maximumTimespan = extractMaximumTimespan(allDates)
+// function to calculate the display's span (y-axis)
+// 'datesPercentage' represents the part of the display which will be covered
+// by dates
+function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
+  return maximumTimespan / datesPercentage
+}
+const displaySpan = calculateDisplaySpan(maximumTimespan)
+console.log(`display span in ms: ${displaySpan}`)
