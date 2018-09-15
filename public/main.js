@@ -1,33 +1,38 @@
 // import data array from dates.js
 const allDates = require('./public/dates')
 
-function testOverlappingDate (date1, date2) {
+// define function to test if two events are overlapping!
+function testOverlappingDate (event1, event2) {
   let infoAboutOverlapping = {
-    id1: date1.id,
-    id2: date2.id
+    id1: event1.sortedOrder,
+    id2: event2.sortedOrder
   }
-  infoAboutOverlapping.return = date1.endTime > date2.startTime
-  let tmpString = `date ${date1.id} and date ${date2.id} are overlapping:`
-  infoAboutOverlapping.string = `${tmpString} ${infoAboutOverlapping.return}`
+  infoAboutOverlapping.return = event1.endTime > event2.startTime
+  infoAboutOverlapping.string = 'date ' + event1.sortedOrder + ' and date ' +
+    event2.sortedOrder + ' are overlapping: ' + infoAboutOverlapping.return
   return infoAboutOverlapping
 }
 
-function filterOverlappingDates (dateArray) {
-  // iterate through every combination of dates and look which ones overlap
-  // start at the first date, i = 0, ...
+// function to iterate throug all combinations of events to filter the
+// overlapping events
+function filterOverlappingDates (allDatesArray) {
+  // iterate through every combination of events and look which ones overlap!
+  // start at the first event, i = 0, ...
   let resultArray = []
-  for (let i = 0; i + 1 < dateArray.length; i++) {
-    // ... and compare with all dates that follow afterwards, j = i + 1
-    for (let j = i + 1; j < dateArray.length; j++) {
-      resultArray.push(testOverlappingDate(dateArray[i], dateArray[j]))
+  for (let i = 0; i + 1 < allDatesArray.length; i++) {
+    // ... and compare with all events that follow afterwards, j = i + 1
+    for (let j = i + 1; j < allDatesArray.length; j++) {
+      resultArray.push(
+        testOverlappingDate(allDatesArray[i], allDatesArray[j])
+      )
     }
   }
-  // filter those date combinations as an array which are overlapping
+  // filter those event combinations as an array which are overlapping
   const overlappedDates = resultArray.filter(object => object.return)
   if (overlappedDates.length) {
     return overlappedDates
   } else {
-    return 'There are no overlapping dates!'
+    return 'There are no overlapping events!'
   }
 }
 const overlappedDates = filterOverlappingDates(allDates)
@@ -78,6 +83,7 @@ function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
   // since maximumTimespan = datesPercentag * displaySpan
   return maximumTimespan / datesPercentage // = displaySpan
 }
+
 // function to convert miliseconds to hours
 function parseMillisecondsIntoReadableTime (milliseconds) {
   // Get hours from milliseconds
@@ -109,11 +115,6 @@ if (typeof maximumTimespan === 'number') {
   )
 } else {
   console.log(`date span, start and end time: ${maximumTimespan}`)
-}
-
-// function to sort by start time
-function sortByStartTime (allDatesArray) {
-  allDatesArray.sort((a, b) => a.startTime - b.startTime)
 }
 
 // Remember the rules
