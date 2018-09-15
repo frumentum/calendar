@@ -4,6 +4,7 @@
 // 3) The longer the duration of the event, the further left the event is positioned
 // 4) The space must be used fully
 // create example data
+let infos = require('./public/helperFunctions.js')
 let allDates = []
 addDate('09:00', '14:30', allDates)
 addDate('09:00', '15:30', allDates)
@@ -30,7 +31,6 @@ function addDate (startTime, endTime, allDatesArray) {
     timeSpan: end - start
   })
 }
-module.exports = allDates
 
 function distributeEventsToColumns (allDates) {
   // sort events by start time followed by time span
@@ -83,29 +83,27 @@ function maximizeUsedSpace (eventsInColumns) {
 }
 const eventListToRender = maximizeUsedSpace(eventsInColumns)
 console.log(eventListToRender)
+console.log(infos.displaySpan)
 
-// identify the timespan of all dates on one day
-function extractMaximumTimespan (allDatesArray, detailed = false) {
-  let tmpTime = [] // dummy variable
-  // extract the earliest date
-  allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
-  const earliestDate = tmpTime.reduce(function (pre, cur) {
-    return Date.parse(pre) > Date.parse(cur) ? cur : pre
-  })
-  // the same for the latest date
-  tmpTime = [] // overwrite it again
-  allDates.forEach(obj => tmpTime.push(obj.endTime))
-  const latestDate = tmpTime.reduce(function (pre, cur) {
-    return Date.parse(pre) < Date.parse(cur) ? cur : pre
-  })
-  // result is the maximum timespan
-  if (detailed) return [earliestDate, latestDate] // only for debugging
-  return latestDate - earliestDate
+// function to render the event list
+function renderEventList (
+  eventList, frameWidth = 96
+) {
+  const dayNames = [
+    'Sonntag',
+    'Montag',
+    'Dienstag',
+    'Mittwoch',
+    'Donnerstag',
+    'Freitag',
+    'Samstag'
+  ]
+  const dayName = dayNames[eventList[0][0].startTime.getDay()]
+  const dayDate = eventListToRender[0][0].startTime.getDate()
+  // const dayOfEventsAsNumber =
+  document.getElementById("dayNumber").innerHTML = `<b>${dayDate}</b>`
+  document.getElementById("weekday").innerHTML = `${dayName}`
 }
-// function to calculate the display's span (y-axis)
-// 'datesPercentage' represents the part of the display which will be covered
-// by dates
-function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
-  // since maximumTimespan = datesPercentag * displaySpan
-  return maximumTimespan / datesPercentage // = displaySpan
-}
+
+console.log(renderEventList(eventListToRender))
+console.log(eventListToRender[0][0].startTime.getDate())
