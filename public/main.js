@@ -30,6 +30,7 @@ function addDate (startTime, endTime, allDatesArray) {
     timeSpan: end - start
   })
 }
+module.exports = allDates
 
 function distributeEventsToColumns (allDates) {
   // sort events by start time followed by time span
@@ -82,3 +83,29 @@ function maximizeUsedSpace (eventsInColumns) {
 }
 const eventListToRender = maximizeUsedSpace(eventsInColumns)
 console.log(eventListToRender)
+
+// identify the timespan of all dates on one day
+function extractMaximumTimespan (allDatesArray, detailed = false) {
+  let tmpTime = [] // dummy variable
+  // extract the earliest date
+  allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
+  const earliestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) > Date.parse(cur) ? cur : pre
+  })
+  // the same for the latest date
+  tmpTime = [] // overwrite it again
+  allDates.forEach(obj => tmpTime.push(obj.endTime))
+  const latestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) < Date.parse(cur) ? cur : pre
+  })
+  // result is the maximum timespan
+  if (detailed) return [earliestDate, latestDate] // only for debugging
+  return latestDate - earliestDate
+}
+// function to calculate the display's span (y-axis)
+// 'datesPercentage' represents the part of the display which will be covered
+// by dates
+function calculateDisplaySpan (maximumTimespan, datesPercentage = 0.85) {
+  // since maximumTimespan = datesPercentag * displaySpan
+  return maximumTimespan / datesPercentage // = displaySpan
+}
