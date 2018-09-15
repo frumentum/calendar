@@ -7,8 +7,8 @@ addDate('11:30', '12:00', allDates)
 addDate('14:30', '15:00', allDates)
 addDate('15:30', '16:00', allDates)
 // sort the array by the timespan: the greater timespans come first!
-addInfoAboutSorting(allDates)
-createSortedNumbers(allDates)
+// addInfoAboutSorting(allDates)
+// createSortedNumbers(allDates)
 
 module.exports = allDates
 
