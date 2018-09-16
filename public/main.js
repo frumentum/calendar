@@ -84,7 +84,7 @@ function maximizeUsedSpace (eventsInColumns) {
 const eventListToRender = maximizeUsedSpace(eventsInColumns)
 
 // function to calculate width and left property for css
-function calculateWidthAndLeft (eventList, allDatesArray) {
+function calculateWidthAndLeft (eventList, allDatesArray, width = 96) {
   // sort allDatesArray
   let events = allDatesArray.sort((a, b) => {
     return a.startTime - b.startTime || b.timeSpan - a.timeSpan
@@ -93,21 +93,32 @@ function calculateWidthAndLeft (eventList, allDatesArray) {
   events.forEach(obj => allIDs.push(obj.id))
   // at first get information about left property
   for (let ID = 0; ID < allIDs.length; ID++) { // get information for every ID
+    const objectToCompare = events.filter(obj => obj.id === allIDs[ID])[0]
+    const index = events.indexOf(objectToCompare)
+
     for (let i = 0; i < eventList.length; i++) { // columnwise
-      let check = eventList[i].filter(obj => obj.id === allIDs[ID])
-      if (check.length !== 0) {
-        const objectToCompare = events.filter(obj => obj.id === allIDs[ID])[0]
-        const index = events.indexOf(objectToCompare)
+      let objectToAnalyse = eventList[i].filter(obj => obj.id === allIDs[ID])
+      if (objectToAnalyse.length !== 0) {
         if (typeof events[index].column === 'undefined') {
           events[index].column = i
         }
-        if (typeof events[index].width === 'undefined') {
-          events[index].width = 1
+        if (typeof events[index].widthAbs === 'undefined') {
+          events[index].widthAbs = 1
         } else {
-          events[index].width += 1
+          events[index].widthAbs += 1
         }
       }
     }
+  }
+  // convert column and width to percentaged specifications
+  let numberOfColumns = []
+  events.forEach(obj => numberOfColumns.push(obj.column))
+  console.log(numberOfColumns)
+  numberOfColumns = Math.max(...numberOfColumns)
+  console.log(`numberOfColumns = ${numberOfColumns}`)
+  for (let ID = 0; ID < events.length; ID++) {
+    events[ID].left = events[ID].column * (width / (numberOfColumns + 1))
+    events[ID].width = events[ID].widthAbs * (width / (numberOfColumns + 1))
   }
   return events
 }
@@ -151,17 +162,17 @@ function convertStarTimeTimeSpanToTopHeight (
     let ev = events[ID]
     // since timespan = displaySpan * x and the specification is expressed as a
     // percentage (not decimal number):
-    events[ID].height = (ev.timeSpan / displaySpan) * 100
+    events[ID].height = Math.floor((ev.timeSpan / displaySpan) * 100)
     let dummyDifference = ev.startTime - earliestStartTime
     // since the percentaged specification of 'top' is the space above the
     // earliest date's start time plus the duration between the two start times,
     // specification of 'top' is expressed as follows:
-    events[ID].top = ((dummyDifference / displaySpan) * 100) +
-      percentToAddBeforeEarliestEvent
+    events[ID].top = Math.floor(((dummyDifference / displaySpan) * 100) +
+      percentToAddBeforeEarliestEvent)
   }
   return events
 }
-console.log(convertStarTimeTimeSpanToTopHeight(allDates, displaySpan))
+console.log(convertStarTimeTimeSpanToTopHeight(allDates, displaySpan ))
 
 // function to render the event list
 function renderEventList (
