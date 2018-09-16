@@ -5,15 +5,16 @@
 // 4) The space must be used fully
 // create example data
 // let infos = require('./public/helperFunctions.js')
-let allDates = []
-addDate('09:00', '14:30', allDates)
-addDate('09:00', '15:30', allDates)
-addDate('09:30', '11:30', allDates)
-addDate('11:30', '12:00', allDates)
-addDate('14:30', '15:00', allDates)
-addDate('15:30', '16:00', allDates)
+let allEvents = []
+addEvent('09:00', '14:30', allEvents)
+addEvent('09:00', '15:30', allEvents)
+addEvent('09:30', '11:30', allEvents)
+addEvent('11:30', '12:00', allEvents)
+addEvent('14:30', '15:00', allEvents)
+addEvent('15:30', '16:00', allEvents)
+addEvent('15:00', '15:30', allEvents)
 
-function addDate (startTime, endTime, allDatesArray) {
+function addEvent (startTime, endTime, allEventsArray) {
   // convert startTime string to Date format
   const _s = startTime.split(':')
   let start = new Date()
@@ -23,18 +24,18 @@ function addDate (startTime, endTime, allDatesArray) {
   let end = new Date()
   end.setUTCHours(_e[0], _e[1], 0, 0)
 
-  // add start and end time to the allDates array
-  allDatesArray.push({
+  // add start and end time to the allEvents array
+  allEventsArray.push({
     startTime: start,
     endTime: end,
-    id: allDatesArray.length + 1,
+    id: allEventsArray.length + 1,
     timeSpan: end - start
   })
 }
 
-function distributeEventsToColumns (allDatesArray) {
+function distributeEventsToColumns (allEventsArray) {
   // sort events by start time followed by time span
-  let events = allDatesArray.sort((a, b) => {
+  let events = allEventsArray.sort((a, b) => {
     return a.startTime - b.startTime || b.timeSpan - a.timeSpan
   })
   // Iterate through each event and place it as much left as possible.
@@ -47,7 +48,7 @@ function distributeEventsToColumns (allDatesArray) {
     for (let j = 0; j < eventsInColumns.length; j++) {
       compareDate2 = eventsInColumns[j][eventsInColumns[j].length - 1].endTime
       // If startTime[i] is later or equal to the last endTime in this column,
-      // allDates[i] will be placed in the same column. Otherwise start a new
+      // allEvents[i] will be placed in the same column. Otherwise start a new
       // list column.
       if (compareDate1 >= compareDate2) {
         eventsInColumns[j].push(events[i])
@@ -62,7 +63,7 @@ function distributeEventsToColumns (allDatesArray) {
   }
   return eventsInColumns
 }
-const eventsInColumns = distributeEventsToColumns(allDates)
+const eventsInColumns = distributeEventsToColumns(allEvents)
 
 function maximizeUsedSpace (eventsInColumns) {
   // Iterate through every event in every column and look if there is enough
@@ -84,9 +85,9 @@ function maximizeUsedSpace (eventsInColumns) {
 const eventListToRender = maximizeUsedSpace(eventsInColumns)
 
 // function to calculate width and left property for css
-function calculateWidthAndLeft (eventList, allDatesArray, width = 96) {
-  // sort allDatesArray
-  let events = allDatesArray.sort((a, b) => {
+function calculateWidthAndLeft (eventList, allEventsArray, width = 96) {
+  // sort allEventsArray
+  let events = allEventsArray.sort((a, b) => {
     return a.startTime - b.startTime || b.timeSpan - a.timeSpan
   })
   let allIDs = []
@@ -113,28 +114,26 @@ function calculateWidthAndLeft (eventList, allDatesArray, width = 96) {
   // convert column and width to percentaged specifications
   let numberOfColumns = []
   events.forEach(obj => numberOfColumns.push(obj.column))
-  console.log(numberOfColumns)
   numberOfColumns = Math.max(...numberOfColumns)
-  console.log(`numberOfColumns = ${numberOfColumns}`)
   for (let ID = 0; ID < events.length; ID++) {
     events[ID].left = events[ID].column * (width / (numberOfColumns + 1))
     events[ID].width = events[ID].widthAbs * (width / (numberOfColumns + 1))
   }
   return events
 }
-console.log(calculateWidthAndLeft(eventListToRender, allDates))
+allEvents = calculateWidthAndLeft(eventListToRender, allEvents)
 
 // identify the timespan of all dates on one day
-function calculateDisplaySpanInMS (allDatesArray, datesPercentage = 0.85) {
+function calculateDisplaySpanInMS (allEventsArray, datesPercentage = 0.85) {
   let tmpTime = [] // dummy variable
   // extract the earliest date
-  allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
+  allEventsArray.forEach(obj => tmpTime.push(obj.startTime))
   const earliestDate = tmpTime.reduce(function (pre, cur) {
     return Date.parse(pre) > Date.parse(cur) ? cur : pre
   })
   // the same for the latest date
   tmpTime = [] // overwrite it again
-  allDates.forEach(obj => tmpTime.push(obj.endTime))
+  allEvents.forEach(obj => tmpTime.push(obj.endTime))
   const latestDate = tmpTime.reduce(function (pre, cur) {
     return Date.parse(pre) < Date.parse(cur) ? cur : pre
   })
@@ -143,15 +142,15 @@ function calculateDisplaySpanInMS (allDatesArray, datesPercentage = 0.85) {
   const maximumTimespan = latestDate - earliestDate
   return Math.floor(maximumTimespan / datesPercentage)
 }
-const displaySpan = calculateDisplaySpanInMS(allDates)
+const displaySpan = calculateDisplaySpanInMS(allEvents)
 
 // function to convert duration of an event to percentaged specification of the
 // 'height' property in css and start time of an event to percentaged
 // specification of the 'top' property in css
 function convertStarTimeTimeSpanToTopHeight (
-  allDatesArray, displaySpan, percentToAddBeforeEarliestEvent = 10
+  allEventsArray, displaySpan, percentToAddBeforeEarliestEvent = 10
 ) {
-  let events = allDatesArray.sort((a, b) => {
+  let events = allEventsArray.sort((a, b) => {
     return a.startTime - b.startTime || b.timeSpan - a.timeSpan
   })
   const earliestStartTime = events[0].startTime
@@ -172,12 +171,12 @@ function convertStarTimeTimeSpanToTopHeight (
   }
   return events
 }
-console.log(convertStarTimeTimeSpanToTopHeight(allDates, displaySpan ))
+allEvents = convertStarTimeTimeSpanToTopHeight(allEvents, displaySpan)
+console.log(allEvents)
+console.log(allEvents.length)
 
 // function to render the event list
-function renderEventList (
-  eventList, frameWidth = 96
-) {
+function renderEventList () {
   // at first render current day
   const dayNames = [
     'Sonntag',
@@ -188,12 +187,45 @@ function renderEventList (
     'Freitag',
     'Samstag'
   ]
-  const dayName = dayNames[eventList[0][0].startTime.getDay()]
-  const dayDate = eventListToRender[0][0].startTime.getDate()
+  const dayName = dayNames[allEvents[0].startTime.getDay()]
+  const dayDate = allEvents[0].startTime.getDate()
   document.getElementById('dayNumber').innerHTML = `<b>${dayDate}</b>`
   document.getElementById('weekday').innerHTML = `${dayName}`
+  // create color array
+  const colors = [
+    ['lightblue', 'blue'],
+    ['lightgreen', 'green'],
+    ['Crimson', 'brown'],
+    ['lightsalmon', 'red'],
+    ['orange', 'orangeRed'],
+    ['lightyellow', 'yellow']
+  ]
+  if (allEvents.length > 6) {
+    const necessaryRandomColors = allEvents.length - 6
+    for (let i = 1; i <= necessaryRandomColors; i++) {
+      colors.push([
+        `#${Math.floor(Math.random() * 1000)}`,
+        `#${Math.floor(Math.random() * 1000)}`
+      ])
+    }
+  }
+  let allIDs = []
+  allEvents.forEach(obj => allIDs.push(obj.id))
+  for (let ID = 0; ID < allIDs.length; ID++) {
+    const container = document.getElementById('container')
+    const newDiv = document.createElement('div')
+    newDiv.setAttribute('id', `newDiv${ID}`)
+    newDiv.setAttribute('class', 'box')
+    newDiv.style.left = `${allEvents[ID].left}%`
+    newDiv.style.width = `${allEvents[ID].width}%`
+    newDiv.style.top = `${allEvents[ID].top}%`
+    newDiv.style.height = `${allEvents[ID].height}%`
+    newDiv.style.background = `
+    linear-gradient(to bottom, ${colors[ID][0]}, ${colors[ID][1]})`
+    container.appendChild(newDiv)
+  }
 }
 
-// window.onload = function () {
-//   renderEventList(eventListToRender)
-// }
+window.onload = function () {
+  renderEventList()
+}
