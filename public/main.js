@@ -113,6 +113,56 @@ function calculateWidthAndLeft (eventList, allDatesArray) {
 }
 console.log(calculateWidthAndLeft(eventListToRender, allDates))
 
+// identify the timespan of all dates on one day
+function calculateDisplaySpanInMS (allDatesArray, datesPercentage = 0.85) {
+  let tmpTime = [] // dummy variable
+  // extract the earliest date
+  allDatesArray.forEach(obj => tmpTime.push(obj.startTime))
+  const earliestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) > Date.parse(cur) ? cur : pre
+  })
+  // the same for the latest date
+  tmpTime = [] // overwrite it again
+  allDates.forEach(obj => tmpTime.push(obj.endTime))
+  const latestDate = tmpTime.reduce(function (pre, cur) {
+    return Date.parse(pre) < Date.parse(cur) ? cur : pre
+  })
+  // result is the maximum timespan
+  // if (detailed) return [earliestDate, latestDate] // only for debugging
+  const maximumTimespan = latestDate - earliestDate
+  return Math.floor(maximumTimespan / datesPercentage)
+}
+const displaySpan = calculateDisplaySpanInMS(allDates)
+
+// function to convert duration of an event to percentaged specification of the
+// 'height' property in css and start time of an event to percentaged
+// specification of the 'top' property in css
+function convertStarTimeTimeSpanToTopHeight (
+  allDatesArray, displaySpan, percentToAddBeforeEarliestEvent = 10
+) {
+  let events = allDatesArray.sort((a, b) => {
+    return a.startTime - b.startTime || b.timeSpan - a.timeSpan
+  })
+  const earliestStartTime = events[0].startTime
+  let allIDs = []
+  events.forEach(obj => allIDs.push(obj.id))
+
+  for (let ID = 0; ID < allIDs.length; ID++) {
+    let ev = events[ID]
+    // since timespan = displaySpan * x and the specification is expressed as a
+    // percentage (not decimal number):
+    events[ID].height = (ev.timeSpan / displaySpan) * 100
+    let dummyDifference = ev.startTime - earliestStartTime
+    // since the percentaged specification of 'top' is the space above the
+    // earliest date's start time plus the duration between the two start times,
+    // specification of 'top' is expressed as follows:
+    events[ID].top = ((dummyDifference / displaySpan) * 100) +
+      percentToAddBeforeEarliestEvent
+  }
+  return events
+}
+console.log(convertStarTimeTimeSpanToTopHeight(allDates, displaySpan))
+
 // function to render the event list
 function renderEventList (
   eventList, frameWidth = 96
